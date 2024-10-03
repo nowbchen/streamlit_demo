@@ -3,7 +3,11 @@ import streamlit_authenticator as stauth
 
 # 用户数据
 usernames = ['user1', 'user2']
-hashed_passwords = stauth.Hasher(['password1', 'password2']).hash()  # 生成哈希加密的密码
+passwords = ['password1', 'password2']
+
+# 生成哈希加密的密码
+hashed_passwords = stauth.Hasher(passwords).generate()
+
 names = ['User One', 'User Two']
 
 # 创建用户鉴权对象，明确参数名称避免冲突
