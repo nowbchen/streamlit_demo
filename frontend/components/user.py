@@ -1,26 +1,25 @@
-import streamlit_authenticator as stauth
 import streamlit as st
-
-# 用户数据
-usernames = ['user1', 'user2']
-passwords = ['password1', 'password2']
-names = ['User One', 'User Two']
-
-# 生成哈希加密的密码
-hashed_passwords = stauth.Hasher(passwords).hash()
-
-# 创建用户鉴权对象
-authenticator = stauth.Authenticate(
-    names=names,
-    usernames=usernames,
-    passwords=hashed_passwords,
-    cookie_name='cookie_name',
-    key='signature_key',
-    cookie_expiry_days=30  # 指定 cookie 过期时间
-)
-
-def authenticate_user():
-    """处理用户鉴权并返回用户名和鉴权状态"""
-    name, authentication_status = authenticator.login('Login', 'main')
-    return name, authentication_status
-
+import streamlit_authenticator as stauth
+import yaml
+ 
+# 从config.yaml加载用户数据
+with open('config/config.yaml') as file:
+    config = yaml.safe_load(file)
+ 
+credentials = {
+    'usernames': {
+        config['usernames'][0]: {'name': config['names'][0], 'password': config['passwords'][0]},
+        config['usernames'][1]: {'name': config['names'][1], 'password': config['passwords'][1]}
+    }
+}
+ 
+authenticator = stauth.Authenticate(credentials, 'cookie_name', 'random_key', 30)
+ 
+name, authentication_status, username = authenticator.login('Login', 'main')
+ 
+if authentication_status:
+    st.write(f'Welcome *{name}*')
+elif authentication_status == False:
+    st.error('Username/password is incorrect')
+elif authentication_status == None:
+    st.warning('Please enter your username and password')
