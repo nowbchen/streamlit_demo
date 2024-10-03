@@ -6,7 +6,7 @@ usernames = ['user1', 'user2']
 passwords = ['password1', 'password2']
 
 # 生成哈希加密的密码
-hashed_passwords = stauth.Hasher(passwords).generate()
+hashed_passwords = stauth.Hasher(passwords).hash()
 
 names = ['User One', 'User Two']
 
