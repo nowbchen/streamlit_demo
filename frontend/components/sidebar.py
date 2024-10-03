@@ -1,36 +1,45 @@
-import streamlit as st
-import streamlit_authenticator as stauth
-
-# 用户数据
-usernames = ['user1', 'user2']
-passwords = ['password1', 'password2']
-
-# 生成哈希加密的密码
-hashed_passwords = stauth.Hasher(passwords).generate()
-
-names = ['User One', 'User Two']
-
-# 创建用户鉴权对象，明确参数名称避免冲突
-authenticator = stauth.Authenticate(
-    names=names,
-    usernames=usernames,
-    passwords=hashed_passwords,
-    cookie_name='cookie_name',
-    key='signature_key',
-    cookie_expiry_days=30  # 指定 cookie 过期时间
-)
-
-# 创建用户登录表单
-name, authentication_status = authenticator.login('Login', 'main')
-
-# 检查登录状态并处理相应的响应
-if authentication_status is True:
-    st.success(f'Welcome {name}!')
-    # 用户登录成功后展示的内容
-elif authentication_status is False:
-    st.error('Username/password is incorrect')
-else:
-    st.warning('Please enter your username and password')
-
-# 允许用户登出
-authenticator.logout('Logout', 'main')
+import streamlit as st  
+from streamlit_authenticator import StAuthenticator, UsernamePasswordHasher  
+  
+# 初始化一个Streamlit应用  
+st.set_page_config(  
+    page_title="Streamlit App with Authentication",  
+    page_icon="::favicon::",  
+    layout="wide",  
+    initial_sidebar_state="expanded",  
+)  
+  
+# 创建一个哈希器对象，用于存储和验证用户名和密码  
+hasher = UsernamePasswordHasher()  
+  
+# 假设这是你的用户名和密码，实际使用中应该通过更安全的方式存储和验证  
+USERNAME = "admin"  
+PASSWORD = hasher.hash_password("my_secure_password")  
+  
+# 创建认证器对象  
+authenticator = StAuthenticator(hasher)  
+  
+# 检查用户是否已登录  
+if not authenticator.is_user_authenticated():  
+    # 如果用户未登录，则显示登录表单  
+    authenticator.login(USERNAME, PASSWORD)  
+  
+# 如果用户已登录，则显示应用程序内容  
+else:  
+    # 在这里编写你的应用程序逻辑  
+    st.title("Welcome to the Secure Streamlit App!")  
+    st.write("You are now authenticated and can access the app.")  
+      
+    # 示例：显示一些数据或进行其他操作  
+    st.write("Here is some data:")  
+    data = {"Name": ["Alice", "Bob", "Charlie"], "Age": [25, 30, 35]}  
+    st.table(data)  
+  
+    # 提供一个注销按钮  
+    if st.button("Logout"):  
+        authenticator.logout()  
+        st.stop()  
+  
+# 运行Streamlit应用  
+if __name__ == "__main__":  
+    st.run_script("app.py")
