@@ -1,24 +1,31 @@
 import streamlit as st
 import streamlit_authenticator as stauth
 
-# 定义用户和密码
+# 用户数据
 usernames = ['user1', 'user2']
-passwords = ['password1', 'password2']
+passwords = stauth.Hasher(['password1', 'password2']).generate()  # 只生成一次哈希
 names = ['User One', 'User Two']
 
-# 创建一个用户鉴权对象
-authenticator = stauth.Authenticate(names, usernames, passwords, 'cookie_name', 'signature_key', cookie_expiry_days=30)
+# 创建用户鉴权对象，明确传递参数名称
+authenticator = stauth.Authenticate(
+    names=names,
+    usernames=usernames,
+    passwords=passwords,
+    cookie_name='cookie_name',
+    key='signature_key',
+    cookie_expiry_days=30  # 传递 cookie_expiry_days
+)
 
 # 创建用户登录表单
 name, authentication_status = authenticator.login('Login', 'main')
 
 if authentication_status:
     st.success(f'Welcome {name}!')
-    # 这里可以放置用户登陆后的内容
-    # ...
-
+    # 登录后展示内容
 elif authentication_status is False:
     st.error('Username/password is incorrect')
+elif authentication_status is None:
+    st.warning('Please enter your username and password')
 
-# 允许用户登出
+# 用户登出
 authenticator.logout('Logout', 'main')
