@@ -1,13 +1,14 @@
 import streamlit as st
 from frontend.components.sidebar import render_sidebar
-from frontend.components.user import authenticator
+from frontend.components.user import authenticate_user
 
-# 创建用户登录表单
-name, authentication_status = authenticator.login('Login', 'main')
+# 用户登录鉴权
+name, authentication_status = authenticate_user()
 
-# 检查登录状态并处理相应的响应
-if authentication_status is True:
+# 登录成功后展示内容
+if authentication_status:
     st.success(f'Welcome {name}!')
+    
     # 渲染侧边栏并获取当前选择的页面
     page = render_sidebar()
 
@@ -24,8 +25,10 @@ if authentication_status is True:
         show_visualization()
 
     # 允许用户登出
+    from frontend.components.user import authenticator
     authenticator.logout('Logout', 'sidebar')
 
+# 处理登录失败或未输入登录信息的情况
 elif authentication_status is False:
     st.error('Username/password is incorrect')
 else:

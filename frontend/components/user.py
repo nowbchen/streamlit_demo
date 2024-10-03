@@ -1,4 +1,5 @@
 import streamlit_authenticator as stauth
+import streamlit as st
 
 # 用户数据
 usernames = ['user1', 'user2']
@@ -17,4 +18,9 @@ authenticator = stauth.Authenticate(
     key='signature_key',
     cookie_expiry_days=30  # 指定 cookie 过期时间
 )
+
+def authenticate_user():
+    """处理用户鉴权并返回用户名和鉴权状态"""
+    name, authentication_status = authenticator.login('Login', 'main')
+    return name, authentication_status
 
